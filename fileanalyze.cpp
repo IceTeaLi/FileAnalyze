@@ -42,18 +42,26 @@ void FileAnalyze::SetUI()
 
     next_page_btn=new QPushButton(this);
     next_page_btn->setText("next page");
+    jump_btn=new QPushButton(this);
+    jump_btn->setText("jump");
+    jump_page_edit=new QLineEdit(this);
+    jump_page_edit->setFixedSize(jump_btn->width(),jump_btn->height());
+    jump_page_edit->setAlignment(Qt::AlignRight);
     previous_page_btn=new QPushButton(this);
     previous_page_btn->setText("previous page");
     page_label=new QLabel(this);
     page_label->setText(" \\ ");
     page_label->setAlignment(Qt::AlignHCenter);
-    main_layout->addWidget(previous_page_btn,2,2,1,1);
-    main_layout->addWidget(page_label,2,3,1,1);
+    main_layout->addWidget(previous_page_btn,2,0,1,1);
+    main_layout->addWidget(jump_page_edit,2,1,1,1);
+    main_layout->addWidget(page_label,2,2,1,1);
+    main_layout->addWidget(jump_btn,2,3,1,1);
     main_layout->addWidget(next_page_btn,2,4,1,1);
 
 
     connect(next_page_btn,&QPushButton::clicked,this,&FileAnalyze::ShowNextPage);
     connect(previous_page_btn,&QPushButton::clicked,this,&FileAnalyze::ShowPrePage);
+    connect(jump_btn,&QPushButton::clicked,this,&FileAnalyze::ShowJumpPage);
 }
 
 void FileAnalyze::GetFileUrl()
@@ -62,16 +70,20 @@ void FileAnalyze::GetFileUrl()
     this->file_input->setText(this->file_url);
 }
 
+
 void FileAnalyze::Analyze(const QString& file_url)
 {
+
     QFile file(file_url);
     file.open(QIODevice::ReadOnly);
     details.file_detail=file.readAll();
-    details.page=details.file_detail.size()/256;
+    details.page=details.file_detail.size()/details.page_size;
     details.page_pos=1;
     ShowOnePage(details.file_detail,details.page_pos);
-    this->page_label->setText(QString::number(details.page_pos)+"\\"+QString::number(details.page_size));
+
 }
+
+
 
 void FileAnalyze::ShowOnePage(QByteArray& data,const int page_pos)
 {
@@ -80,5 +92,6 @@ void FileAnalyze::ShowOnePage(QByteArray& data,const int page_pos)
     {
         this->browser->setItem(i/16,i%16,new QTableWidgetItem(QString::number(data.at(real_pos+i)).sprintf("%02X",data.at(real_pos+i))));
     }
-    this->page_label->setText(QString::number(details.page_pos)+"\\"+QString::number(details.page_size));
+    this->jump_page_edit->setText(QString::number(details.page_pos));
+    this->page_label->setText("\\"+QString::number(details.page));
 }
