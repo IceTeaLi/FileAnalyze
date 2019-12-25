@@ -90,7 +90,7 @@ void FileAnalyze::ShowOnePage(QByteArray& data,const int page_pos)
     int real_pos=(page_pos-1)*256;
     for(int i=0;i<256;++i)
     {
-        this->browser->setItem(i/16,i%16,new QTableWidgetItem(QString::number(data.at(real_pos+i)).sprintf("%02X",data.at(real_pos+i))));
+        this->browser->setItem(i/16,i%16,new QTableWidgetItem(QString::number(static_cast<unsigned char>(data.at(real_pos+i))).sprintf("%02x",static_cast<unsigned char>(data.at(real_pos+i))).toUpper()));
     }
     this->jump_page_edit->setText(QString::number(details.page_pos));
     this->page_label->setText("\\"+QString::number(details.page));
